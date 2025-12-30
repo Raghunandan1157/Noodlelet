@@ -13,12 +13,17 @@ struct ContentView: View {
 
             DayView()
                 .tabItem {
-                    Label("Day", systemImage: "calendar")
+                    Label("Timeline", systemImage: "calendar.day.timeline.left")
                 }
 
             SearchView()
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
+                }
+
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
                 }
         }
         .environmentObject(store)

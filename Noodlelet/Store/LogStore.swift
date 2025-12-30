@@ -61,6 +61,18 @@ class LogStore: ObservableObject {
         saveAllEntries() // Re-write file since we can't easily remove one line from middle
     }
 
+    func clearAll() {
+        entries.removeAll()
+        saveAllEntries()
+    }
+
+    func getJSONData() -> Data? {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = .prettyPrinted
+        return try? encoder.encode(entries)
+    }
+
     private func appendEntryToFile(_ entry: LogEntry) {
         guard let url = fileURL else { return }
 

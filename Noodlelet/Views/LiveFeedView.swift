@@ -1,59 +1,66 @@
 import SwiftUI
+import UIKit
 
 struct LiveFeedView: View {
     @EnvironmentObject var store: LogStore
 
+    // Group logs by Day
+    var groupedEntries: [Date: [LogEntry]] {
+        Dictionary(grouping: store.entries) { entry in
+            Calendar.current.startOfDay(for: entry.timestamp)
+        }
+    }
+
+    var sortedDates: [Date] {
+        groupedEntries.keys.sorted(by: >)
+    }
+
     var body: some View {
         NavigationView {
-            List {
-                ForEach(store.entries) { entry in
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(entry.timestamp, style: .time)
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    if store.entries.isEmpty {
+                        VStack(spacing: 20) {
+                            Image(systemName: "text.viewfinder")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gray)
+                            Text("No logs yet")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                            Text("Start the Broadcast Extension from Control Center to begin logging.")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-
-                            if let hint = entry.appHint {
-                                Text("•")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text(hint)
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.blue)
-                            }
-
-                            Spacer()
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
                         }
-
-                        Text(entry.snippet)
-                            .font(.body)
-                            .lineLimit(3)
+                        .padding(.top, 60)
+                    } else {
+                        ForEach(sortedDates, id: \.self) { date in
+                            Section(header:
+                                HStack {
+                                    Text(date, style: .date)
+                                        .font(.subheadline)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.secondary)
+                                        .textCase(.uppercase)
+                                    Spacer()
+                                }
+                                .padding(.horizontal)
+                                .padding(.top, 8)
+                            ) {
+                                ForEach(groupedEntries[date] ?? []) { entry in
+                                    LogRowView(entry: entry)
+                                }
+                            }
+                        }
                     }
-                    .padding(.vertical, 4)
                 }
-                .onDelete { indexSet in
-                    indexSet.forEach { index in
-                        store.deleteEntry(at: index)
-                    }
-                }
+                .padding(.bottom, 20)
             }
+            .background(Color(UIColor.systemGroupedBackground)) // Light gray background
+            .navigationTitle("Noodlelet")
             .refreshable {
                 store.loadEntries()
-            }
-            .navigationTitle("Live Feed")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    // Placeholder for Start/Stop Broadcast
-                    // Note: You cannot programmatically start broadcast from the main app without user interaction via RPSystemBroadcastPickerView
-                    // We will add a picker view here later or assume user knows to use Control Center.
-                    // For better UX, we can add a help button or status.
-                    Text("Always-On")
-                        .font(.caption)
-                        .padding(4)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(4)
-                }
             }
         }
     }

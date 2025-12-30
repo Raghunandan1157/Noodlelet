@@ -4,7 +4,8 @@
 The code has been generated with the following structure:
 - **Noodlelet/Models**: Contains `LogEntry.swift` (Data Model).
 - **Noodlelet/Store**: Contains `LogStore.swift` (Main App Data Logic).
-- **Noodlelet/Views**: Contains SwiftUI Views (`ContentView`, `LiveFeedView`, `SearchView`, `DayView`).
+- **Noodlelet/Views**: Contains SwiftUI Views (`ContentView`, `LiveFeedView`, `SearchView`, `DayView`, `SettingsView`).
+- **Noodlelet/Views/Components**: Contains `LogRowView.swift`.
 - **Noodlelet/Shared**: Contains `LogWriter.swift` (Helper for Extension).
 - **NoodleletBroadcast**: Contains `SampleHandler.swift` and `Info.plist` for the Broadcast Upload Extension.
 
@@ -63,5 +64,6 @@ Since the project file (`project.pbxproj`) cannot be fully automated for new tar
    - Long-press the **Screen Recording** button.
    - Select **Noodlelet** from the list.
    - Tap **Start Broadcast**.
-4. Navigate around your phone. The extension will capture text snippets every ~3 seconds.
+4. Navigate around your phone. The extension will capture text snippets every ~4 seconds, filtering out status bar noise (time/battery).
 5. Return to the Noodlelet app to see your log entries appear in real-time!
+6. **Export**: Go to the **Settings** tab and tap **Export Logs to JSON** to save your data to the Files app.
